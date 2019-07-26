@@ -2,52 +2,61 @@
 #define PID_H
 
 class PID {
-private:
-  // Error
-  double _p_error;
-  double _i_error;
-  double _d_error;
-  double _prev_cte;
-
-  long _count;
-  double _error_sum;
-
-  double _Kp;
-  double _Ki;
-  double _Kd;
-
 public:
+    /*
+    * Errors
+    */
+    double p_error;
+    double i_error;
+    double d_error;
 
-  /*
-  * Constructor
-  */
-  PID();
+    /*
+    * Coefficients
+    */
+    double Kp;
+    double Ki;
+    double Kd;
 
-  /*
-  * Destructor.
-  */
-  virtual ~PID();
+    double output_value;
+    double dp_p;
+    double dp_i;
+    double dp_d;
+    int step_counter;
+    int max_steps;
+    double total_err;
+    double best_err;
+    bool increasing = true;
+    int cnt;
 
-  /*
-  * Initialize PID.
-  */
-  void Init(double Kp, double Ki, double Kd);
+    /*
+    * Constructor
+    */
+    PID();
 
-  /*
-  * Update the PID error variables given cross track error.
-  */
-  void UpdateError(double cte);
+    /*
+    * Destructor.
+    */
+    virtual ~PID();
 
-  /*
-  * Calculate the total PID error.
-  */
-  double TotalError();
+    /*
+    * Initialize PID.
+    */
+    void Init(double Kp, double Ki, double Kd);
 
-  /*
-  *  Returns the average error.
-  */
-  double AverageError();
+    /*
+    * Update the PID error variables given cross track error.
+    */
+    void UpdateError(double cte);
 
+    /*
+    * Calculate the total PID error.
+    */
+    double TotalError();
+
+    /*
+    * Twiddle.
+    */
+    void Twiddle();
 };
 
 #endif /* PID_H */
