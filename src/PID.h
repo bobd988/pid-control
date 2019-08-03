@@ -25,8 +25,8 @@ public:
     int max_steps;
     double total_err;
     double best_err;
-    bool increasing = true;
-    int cnt;
+    bool increment = true;
+    int coefficient_choice;
 
     /*
     * Constructor

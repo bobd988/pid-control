@@ -30,8 +30,8 @@ void PID::Init(double Kp, double Ki, double Kd) {
     this->dp_i = 0.9;
     this->dp_d = 1;
 
-    this->increasing = true;
-    this->cnt = 0;
+    this->increment = true;
+    this->coefficient_choice = 0;
 }
 
 void PID::UpdateError(double cte) {
@@ -62,7 +62,7 @@ double PID::TotalError() {
 
 void PID::Twiddle() {
 
-    if (step_counter == max_steps) {
+    if (step_counter >= max_steps) {
 
         double err = TotalError();
 
@@ -72,7 +72,8 @@ void PID::Twiddle() {
         cout << "dp_p = " << dp_p << ", dp_i = " << dp_i << ", dp_d = " << dp_d << endl;
 
         if (err < best_err) {
-            int value = cnt %3;
+            // adjust coefficient choice
+            int value = coefficient_choice %3;
             if (value == 0) {
                 if (dp_p < 1)
                     dp_p *= 1.1;
@@ -88,24 +89,26 @@ void PID::Twiddle() {
                     dp_d *= 1.1;
                 Kp = Kp * dp_p;
             }
-            cnt++;
+            coefficient_choice++;
             best_err = err;
-            increasing = true;
+            increment = true;
         } else {
-            cnt++;
-            if (increasing) {
-                increasing = false;
-                int value = cnt %3;
+            coefficient_choice++;
+            if (increment) {
+                //false if last update was an increment and current error was worse than best error
+                increment = false;
+                //adjust coefficient choice
+                int value = coefficient_choice %3;
                 if(value==0) {
                     Kp = Kp / dp_p * dp_p;
                 }else if(value==1) {
                     Ki = Ki / dp_i * dp_i;
                 }else if(value==2){
-                    Kd = Kd / dp_d*dp_d;
+                    Kd = Kd / dp_d * dp_d;
                 }
             } else {
-                increasing = true;
-                int value = cnt %3;
+                increment = true;
+                int value = coefficient_choice %3;
                 if(value==0){
                     Kp = Kp * dp_p;
                     Ki = Ki * dp_i;
